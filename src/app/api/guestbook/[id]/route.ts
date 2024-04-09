@@ -18,7 +18,7 @@ export const DELETE = async (
       return response<MessageResponse>({ message: 'Unauthenticated' }, 401);
     }
 
-    const guestbook = await findEntryById({ id: Number(params.id) });
+    const guestbook = await findEntryById({ id: params.id });
 
     if (!guestbook) {
       return response({ message: 'Not Found' }, 404);
@@ -31,7 +31,7 @@ export const DELETE = async (
       return response({ message: 'Forbidden' }, 403);
     }
 
-    await deleteEntry({ id: Number(params.id) });
+    await deleteEntry({ id: params.id });
 
     return response(null, 204);
   } catch (err) {
