@@ -44,14 +44,22 @@ export const addEntry = async ({
   });
 };
 
-export const findEntryById = async ({ id }: { id: number }) => {
+export const findEntryById = async ({
+  id,
+}: {
+  id: number | string | undefined;
+}) => {
   return await prisma.guestbook.findFirst({
     where: { id },
     select: { id: true, body: true, created_at: true, user: true },
   });
 };
 
-export const deleteEntry = async ({ id }: { id: number }) => {
+export const deleteEntry = async ({
+  id,
+}: {
+  id: number | string | undefined;
+}) => {
   await prisma.guestbook.delete({
     where: { id },
   });

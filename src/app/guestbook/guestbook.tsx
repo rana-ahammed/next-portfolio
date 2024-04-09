@@ -1,40 +1,40 @@
-'use client'
+'use client';
 
-import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react';
 
-import { Skeleton } from '@/components/ui'
-import cn from '@/utils/cn'
+import { Skeleton } from '@/components/ui';
+import cn from '@/utils/cn';
 
-import AuthCard from './auth-card'
-import Entries from './entries'
-import MessagePanel from './message-panel'
-import useGuestbook from './use-guestbook'
+import AuthCard from './auth-card';
+import Entries from './entries';
+import MessagePanel from './message-panel';
+import useGuestbook from './use-guestbook';
 
 interface GuestbookProps {
-  isWidget?: boolean
+  isWidget?: boolean;
 }
 
 const Guestbook = ({ isWidget = false }: GuestbookProps) => {
-  const { data: session } = useSession()
-  const { entries, addEntry, deleteEntry, loading, mutate } = useGuestbook()
+  const { data: session } = useSession();
+  const { entries, addEntry, deleteEntry, loading, mutate } = useGuestbook();
 
   const onSendMessage = async (message: string) => {
     try {
-      await addEntry(message)
-      mutate()
+      await addEntry(message);
+      mutate();
     } catch (err) {
-      console.error('An error occurred onSendMessage: ', err)
+      console.error('An error occurred onSendMessage: ', err);
     }
-  }
+  };
 
   const onDeleteMessage = async (messageId: string) => {
     try {
-      await deleteEntry(messageId)
-      mutate()
+      await deleteEntry(messageId);
+      mutate();
     } catch (err) {
-      console.error('An error occurred onDeleteMessage: ', err)
+      console.error('An error occurred onDeleteMessage: ', err);
     }
-  }
+  };
 
   return (
     <>
@@ -75,7 +75,7 @@ const Guestbook = ({ isWidget = false }: GuestbookProps) => {
         </>
       )}
     </>
-  )
-}
+  );
+};
 
-export default Guestbook
+export default Guestbook;
