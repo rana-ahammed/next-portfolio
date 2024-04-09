@@ -1,0 +1,165 @@
+
+datasource db {
+  provider          = "mongodb"
+  url               = env("DATABASE_URL")
+}
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                       String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId                   String @db.ObjectId
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?  @db.String
+  access_token             String?  @db.String
+  refresh_token_expires_in Int?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?  @db.String
+  session_state            String?
+  oauth_token_secret       String?
+  oauth_token              String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SkillCategory {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  skills_in_category Skill[]
+
+  @@map("skill_categories")
+}
+
+model Skill {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  name              String         @unique
+  skill_category_id String? @db.ObjectId
+  endorsements      Endorsement[]
+  skill_category    SkillCategory? @relation(fields: [skill_category_id], references: [id])
+
+  @@index([skill_category_id])
+  @@map("skills")
+}
+
+model Endorsement {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  skill_id  String? @db.ObjectId
+  updatedAt DateTime @default(now())
+  userId    String? @db.ObjectId
+  skill     Skill?   @relation(fields: [skill_id], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([skill_id])
+  @@index([userId])
+  @@map("endorsements")
+}
+
+model User {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  endorsements  Endorsement[]
+  guestbook     Guestbook[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model ContentMeta {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  views     View[]
+  shares    Share[]
+  reactions Reaction[]
+
+  @@map("content_meta")
+}
+
+model View {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String
+  contentId String @db.ObjectId
+  createdAt DateTime    @default(now())
+  content   ContentMeta @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+}
+
+model Share {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String
+  type      ShareType?  @default(OTHERS)
+  contentId String @db.ObjectId
+  createdAt DateTime    @default(now())
+  content   ContentMeta @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@map("shares")
+}
+
+enum ShareType {
+  CLIPBOARD
+  TWITTER
+  LINKEDIN
+  OTHERS
+}
+
+model Reaction {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId String
+  type      ReactionType? @default(LIKED)
+  contentId String @db.ObjectId
+  count     Int?          @default(1)
+  createdAt DateTime      @default(now())
+  content   ContentMeta   @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@map("reactions")
+}
+
+enum ReactionType {
+  LIKED
+  CLAPPING
+  LOVED
+  THINKING
+}
+
+model Guestbook {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  body        String
+  created_at  DateTime  @default(now())
+  userId      String? @db.ObjectId
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("guestbook")
+}
