@@ -31,7 +31,7 @@ const site: Site = {
     name: 'Rana Ahammed',
     url: 'https://rana-ahammed.vercel.app',
     email: 'rana.ahammed.012@gmail.com',
-    linkedIn: 'https://www.linkedin.com/in/rana-ahammed2',
+    linkedIn: 'https://www.linkedin.com/in/rana-ahammed-',
     avatar: '/media/rana-ahammed/rana-ahammed.png',
     twitter: '@rana_ahammed_',
   },
